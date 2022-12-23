@@ -11,6 +11,6 @@ public class ModPatches
     public static void Marshmallow_Eat_Postfix()
     {
         DontStarveMod.Log("Eating Marshmallow", MessageType.Success);
-        DontStarveMod.Instance.ResetHunger();
+        DontStarveMod.Instance.ResetHunger(fullRefill: false);
     }
 }

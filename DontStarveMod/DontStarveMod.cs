@@ -11,10 +11,10 @@ public class DontStarveMod : ModBehaviour
 {
     public static DontStarveMod Instance { get; private set; }
 
-    public const int HUNGER_TIME_START = 300;
-    public const int CRITICAL_THRESHOLD = 60;
-    
-    private static float _hungerTimeLeft = HUNGER_TIME_START;
+    public static int HungerStartingValue { get; private set; }
+    public static int HungerRestorationValue { get; private set; }
+
+    private static float _hungerTimeLeft = 0f;
     private static bool _criticalThresholdMet = false;
     private static bool _death = false;
     private static OWScene _currentScene;
@@ -27,8 +27,8 @@ public class DontStarveMod : ModBehaviour
 
     private void Start()
     {
-        // Starting here, you'll have access to OWML's mod helper.
-        ModHelper.Console.WriteLine($"My mod {nameof(DontStarveMod)} is loaded!", MessageType.Success);
+        HungerStartingValue = ModHelper.Config.GetSettingsValue<int>("Starting Value");
+        HungerRestorationValue = ModHelper.Config.GetSettingsValue<int>("Restoration Value");
         
         // Example of accessing game code.
         LoadManager.OnCompleteSceneLoad += (scene, loadScene) =>
@@ -51,7 +51,7 @@ public class DontStarveMod : ModBehaviour
         
         _hungerTimeLeft -= Time.unscaledDeltaTime * Time.timeScale;  // Note: I have some doubts on the scalability of the Time.deltaTime variable.
 
-        if (!_criticalThresholdMet && _hungerTimeLeft <= CRITICAL_THRESHOLD)
+        if (!_criticalThresholdMet && _hungerTimeLeft <= 60)
         {
             _criticalThresholdMet = true;
             NotificationManager.SharedInstance.PostNotification(
@@ -70,9 +70,11 @@ public class DontStarveMod : ModBehaviour
         }
     }
 
-    public void ResetHunger()
+    public void ResetHunger(bool fullRefill = true)
     {
-        _hungerTimeLeft = HUNGER_TIME_START;
+        _hungerTimeLeft += HungerRestorationValue;
+        if (fullRefill || _hungerTimeLeft > HungerStartingValue)
+            _hungerTimeLeft = HungerStartingValue;
         _criticalThresholdMet = false;
         _death = false;
     }
