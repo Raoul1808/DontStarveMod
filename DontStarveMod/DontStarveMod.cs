@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Reflection;
+﻿using System.Reflection;
 using HarmonyLib;
 using OWML.Common;
 using OWML.ModHelper;
@@ -18,7 +17,9 @@ public class DontStarveMod : ModBehaviour
     private static bool _criticalThresholdMet = false;
     private static bool _death = false;
     private static OWScene _currentScene;
-    
+
+    public static float HungerFraction => _hungerTimeLeft / HungerStartingValue;
+
     private void Awake()
     {
         Instance = this;
@@ -78,6 +79,10 @@ public class DontStarveMod : ModBehaviour
         _criticalThresholdMet = false;
         _death = false;
     }
+
+    public float GetCurrentHunger() => _hungerTimeLeft;
+
+    public float GetHungerFraction() => _hungerTimeLeft / HungerStartingValue;
 
     public static void Log(string msg, MessageType type) => Instance.ModHelper.Console.WriteLine(msg, type);
 }
