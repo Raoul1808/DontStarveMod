@@ -41,12 +41,6 @@ public class DontStarveMod : ModBehaviour
 
     private void Update()
     {
-        if (OWInput.IsNewlyPressed(InputLibrary.rollMode))
-        {
-            ResetHunger();
-            _hungerTimeLeft = 60f;
-        }
-        
         if (_death || _currentScene != OWScene.SolarSystem)
             return;
         
