@@ -12,22 +12,30 @@ public class HungerHUD
     private static Image _hungerBarImage;
     private static Image _hungerBarArrowImage;
     private static float _hungerArrowOriginRotation;
+    private static GameObject _hungerBarBackground;
 
     [HarmonyPatch(typeof(HUDCanvas), "Start")]
     [HarmonyPostfix]
     public static void HUDCanvas_Start_Postfix(HUDCanvas __instance)
     {
-        GameObject gaugeFuel = GameObject.Find("PlayerHUD/HelmetOnUI/UICanvas/GaugeGroup/Gauge/Fuel");
-        _hungerBarGroup = GameObject.Instantiate(gaugeFuel, gaugeFuel.transform.parent);
+        var gaugeBoost = GameObject.Find("PlayerHUD/HelmetOnUI/UICanvas/GaugeGroup/Gauge/Boost");
+        _hungerBarGroup = GameObject.Instantiate(gaugeBoost, gaugeBoost.transform.parent);
         _hungerBarGroup.name = "Hunger";
         var hungerBar = _hungerBarGroup.transform.GetChild(0).gameObject;
         hungerBar.name = "HungerBar";
         _hungerBarImage = hungerBar.GetComponent<Image>();
         var hungerArrow = _hungerBarGroup.transform.GetChild(1).gameObject;
         _hungerBarArrowImage = hungerArrow.GetComponent<Image>();
-        var pos = _hungerBarGroup.transform.position;
-        _hungerBarGroup.transform.position = new Vector3(pos.x + 0.5f, pos.y, pos.z);
         __instance.InitArrowIndicator(_hungerBarImage, _hungerBarArrowImage.transform.parent.gameObject, ref _hungerArrowOriginRotation);
+
+        var gaugeBackground = GameObject.Find("PlayerHUD/HelmetOnUI/UICanvas/GaugeGroup/BackgroundBoost");
+        _hungerBarBackground = GameObject.Instantiate(gaugeBackground, gaugeBackground.transform.parent);
+        _hungerBarBackground.name = "BackgroundHunger";
+        
+        _hungerBarBackground.transform.localRotation = Quaternion.Euler(0f, 0f, 210f);
+        _hungerBarBackground.transform.localScale = new Vector3(1.16f, -1.16f, 1f);
+        _hungerBarGroup.transform.localRotation = Quaternion.Euler(0f, 0f, 270f);
+        _hungerBarGroup.transform.localScale = new Vector3(1.16f, -1.16f, 1f);
     }
 
     [HarmonyPatch(typeof(HUDCanvas), "Update")]
@@ -44,21 +52,5 @@ public class HungerHUD
             num *= -1f;
         Vector3 angles = new Vector3(0f, 0f, _hungerArrowOriginRotation + num);
         _hungerBarArrowImage.transform.localEulerAngles = angles;
-
-        // const float SPEED = 0.05f;
-        // float x = 0f;
-        // float y = 0f;
-        // if (Keyboard.current[Key.L].isPressed)
-        //     x += SPEED;
-        // if (Keyboard.current[Key.J].isPressed)
-        //     x -= SPEED;
-        // if (Keyboard.current[Key.K].isPressed)
-        //     y -= SPEED;
-        // if (Keyboard.current[Key.I].isPressed)
-        //     y += SPEED;
-        // var pos = _hungerBarGroup.transform.position;
-        // if (Keyboard.current[Key.O].isPressed)
-        //     DontStarveMod.Log("X: " + pos.x + " ; Y : " + pos.y, MessageType.Success);
-        // _hungerBarGroup.transform.position = new Vector3(pos.x + x, pos.y + y, pos.z);
     }
 }
